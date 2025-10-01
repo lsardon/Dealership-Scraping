@@ -1,23 +1,31 @@
 version: '3.8'
 
 services:
-  dealership-scraper:
-    build: .
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: dealership-scraper
     volumes:
-      - ./output:/app/output
-      - ./data:/app/data
+      - scraper-data:/app/output
+      - scraper-logs:/app/logs
     environment:
       - TZ=America/Chicago
-      - PYTHONUNBUFFERED=1
-      # Add any API keys or config here
+      - HEADLESS=true
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - SCRAPE_INTERVAL=${SCRAPE_INTERVAL:-3600}
-      - MAX_WORKERS=${MAX_WORKERS:-5}
     restart: unless-stopped
     networks:
       - dokploy-network
-    labels:
-      - "dokploy.enabled=true"
+    mem_limit: 2g
+    mem_reservation: 1g
+    cpus: '1.5'
+
+volumes:
+  scraper-data:
+    driver: local
+  scraper-logs:
+    driver: local
 
 networks:
   dokploy-network:
