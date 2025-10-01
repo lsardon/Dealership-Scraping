@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  dealership-scraper:
+    build: .
+    container_name: dealership-scraper
+    volumes:
+      - ./output:/app/output
+      - ./data:/app/data
+    environment:
+      - TZ=America/Chicago
+      - PYTHONUNBUFFERED=1
+      # Add any API keys or config here
+      - SCRAPE_INTERVAL=${SCRAPE_INTERVAL:-3600}
+      - MAX_WORKERS=${MAX_WORKERS:-5}
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+    labels:
+      - "dokploy.enabled=true"
+
+networks:
+  dokploy-network:
+    external: true
